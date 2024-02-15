@@ -1,0 +1,173 @@
+{% assign has_featured_img = false %}
+{% assign use_fcs = false %}
+{% if page.features_count > 0 %}
+  {% assign use_fcs = true %}
+  {% assign has_featured_img = true %}
+{% endif %}
+{% if page.has_meta_image? %}
+  {% assign has_featured_img = true %}
+{% endif %}
+
+{% if site.has_background_image? %}
+<div class="page">
+  <div class="page-inner rounded-top pt-0">
+{% endif %}
+
+<div class="event-page">
+
+  <div class="event-page-header bg-dark{% if site.has_background_image? %} mx-n4 rounded-top{% endif %}{% unless has_featured_img %} pb-5{% endunless %}">
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          {% capture breadcrumb_classes %}mt-2 pt-2 text-white{% if has_featured_img %} mb-lg-0{% endif %}{% endcapture %}
+          {% include "breadcrumbs" class:breadcrumb_classes,  link_class:'text-white' %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-6 align-self-center">
+          {% if page.headline.size > 0 %}
+            <div id="headline" class="mb-3">
+              <h2 class="h1 mb-4 text-white">{{ page.headline }}</h2>
+              <div class="d-flex align-items-center">
+                <div class="cal-icon">
+                  {% include "date_format" date:page.event.local_start_at %}
+                  <div class="cal-icon-month">{{ month_abbr }}</div>
+                  <div class="cal-icon-day">{{ day }}</div>
+                </div>
+                <div class="ml-2 text-white">
+                  <span class="h5 text-sans-serif">
+                    {% capture start %}{% include "date_format" date:page.event.local_start_at %}{{full_datetime}}{% endcapture %}
+                    {% if page.event.is_multi_day? %}
+                      {% capture end %}{% include "date_format" date:page.event.local_end_at %}{{mdy_date}}{% endcapture %}
+                      {{ t_events_multi_day_date | replace: '$start', start | replace: '$end': end }}
+                    {% else %}
+                      {{ start }}
+                    {% endif %}
+                  </span>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+        {% if has_featured_img %}
+          <div class="col-lg-6 align-self-end">
+            {% include "features--event" features:use_fcs, sidebar:true %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="event-page-share">
+    {% include "social_share_widget" %}
+  </div>
+
+  <div class="event-page-content mt-3 mt-lg-5{% if site.has_background_image? %} px-0{% endif %}">
+    <div id="content">
+      <div class="row">
+        <div class="col-lg-6">
+          {% include "event_details" %}
+          {% if page.event.content.size > 0 %}
+            {{ page.event.content }}
+          {% endif %}
+          {% include "posted_byline" %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="event-page-form-wrap{% if has_featured_img %} has-features{% endif %}">
+    <div class="{% unless site.has_background_image? %}container{% endunless %}">
+      <div class="row">
+        <div class="col-lg-6 offset-lg-6">
+          {% capture event_form_classes %}{% if has_featured_img %}rounded-top-0{% else %}mt-4{% endif %}{% endcapture %}
+          {% include "event_form" form_classes:event_form_classes sidebar:true %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="event-page-stream mb-5">
+    <div class="{% unless site.has_background_image? %}container{% endunless %}">
+      <div class="row justify-content-center">
+        <div class="col-lg-9">
+          {% if page.tags_count > 0 %}
+            {% include "page_tags" with page %}
+          {% endif %}
+
+          {% if page.show_stream? %}
+            {% include "page_stream" %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% if site.has_background_image? %}
+  </div>
+</div>
+{% endif %}
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const applyDiscountButton = document.getElementById("apply_discount_button");
+    const discountCodeField = document.getElementById("discount_code");
+
+    function resetPage() { //Resets the page back to default if wrong code is entered
+      const discountTicketRows = document.querySelectorAll('[id*=row_for_discount_ticket_]');
+
+      discountTicketRows.forEach(function(element) {
+        element.style.display = "none";
+      });
+
+      const ticketRows = document.querySelectorAll('[id*=row_for_ticket_]');
+
+      ticketRows.forEach(function(element) {
+        element.style.display = "block";
+      });
+
+      discountCodeField.value = "";
+    }
+
+    applyDiscountButton.addEventListener("click", function() {
+      const discountCode = discountCodeField.value.trim();
+      const discounts = { // These are the coupon codes, they must correspond to the description of the ticket
+        "KIKI": "$2 Discount", // Code and discount for Early Bird Ticket
+        "FOO": "25% Discount", // Code and discount for Student Ticket
+        "BAR": "60% Discount", // Code and discount for Staff Ticket
+      };
+      
+      let discountCodeNumber;
+
+      if (discounts.hasOwnProperty(discountCode)) {
+        //Displays only one discount ticket tier at a time according to the most recent correct code
+        const discountCodeNumber = discounts[discountCode].match(/\d+/)[0];
+        const discountTicketRows = document.getElementById(`row_for_discount_ticket_${discountCodeNumber}`);
+        discountTicketRows.style.display = "block";
+
+        // Hides all other discounted tickets besides the current one
+        const hiddenDiscountTicketRows = document.querySelectorAll('[id^="row_for_discount_ticket_"]');
+        hiddenDiscountTicketRows.forEach(function(element) {
+          if (!element.id.includes(discountCodeNumber)) {
+            element.style.display = "none";
+          }
+        });
+      } else {
+        alert("Discount code not valid.");
+        resetPage();
+      }
+    });
+  });
+</script>
+
+<style>
+[id^="row_for_discount_ticket_"] {
+    display: none;
+}
+  
+[id^="row_for_ticket_"] {
+    display: block;
+}
+</style>
