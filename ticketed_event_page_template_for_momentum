@@ -1,0 +1,62 @@
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const applyDiscountButton = document.getElementById("apply_discount_button");
+    const discountCodeField = document.getElementById("discount_code");
+
+    function resetPage() { //Resets the page back to default if wrong code is entered
+      const discountTicketRows = document.querySelectorAll('[id*=row_for_discount_ticket_]');
+
+      discountTicketRows.forEach(function(element) {
+        element.style.display = "none";
+      });
+
+      const ticketRows = document.querySelectorAll('[id*=row_for_ticket_]');
+
+      ticketRows.forEach(function(element) {
+        element.style.display = "block";
+      });
+
+      discountCodeField.value = "";
+    }
+
+    applyDiscountButton.addEventListener("click", function() {
+      const discountCode = discountCodeField.value.trim();
+      const discounts = { // These are the coupon codes, they must correspond to the description of the ticket
+        "KIKI": "$2 Discount", // Code and discount for Early Bird Ticket
+        "FOO": "25% Discount", // Code and discount for Student Ticket
+        "BAR": "60% Discount", // Code and discount for Staff Ticket
+      };
+      
+      let discountCodeNumber;
+
+      if (discounts.hasOwnProperty(discountCode)) {
+        //Displays only one discount ticket tier at a time according to the most recent correct code
+        const discountCodeNumber = discounts[discountCode].match(/\d+/)[0];
+        const discountTicketRows = document.getElementById(`row_for_discount_ticket_${discountCodeNumber}`);
+        discountTicketRows.style.display = "block";
+
+        // Hides all other discounted tickets besides the current one
+        const hiddenDiscountTicketRows = document.querySelectorAll('[id^="row_for_discount_ticket_"]');
+        hiddenDiscountTicketRows.forEach(function(element) {
+          if (!element.id.includes(discountCodeNumber)) {
+            element.style.display = "none";
+          }
+        });
+      } else {
+        alert("Discount code not valid.");
+        resetPage();
+      }
+    });
+  });
+</script>
+
+<style>
+[id^="row_for_discount_ticket_"] {
+    display: none;
+}
+  
+[id^="row_for_ticket_"] {
+    display: block;
+}
+</style>
