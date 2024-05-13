@@ -111,7 +111,7 @@ function handleXValues(sheet, headers, lastColumn, lastRow) {
     tagListValues.push([tagListValue]);
   }
 
-  var tagListColumn = sheet.getRange(2, tagListColumnIndex, tagListValues.length, 1);
+  var tagListColumn = sheet.getRange(2, lastColumn + 1, tagListValues.length, 1);
   tagListColumn.setValues(tagListValues);
 
   // Remove "x" columns
