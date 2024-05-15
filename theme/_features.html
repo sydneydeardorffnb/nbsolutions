@@ -1,0 +1,146 @@
+{% if page.features_count > 0 %}
+
+  {% capture fcs_parser %}{% for feature in page.features %}{% if feature.image_url and feature.headline == "" %}1{% else %}0{% endif %}{% unless forloop.last %}, {% endunless %}{% endfor %}{% endcapture %}
+  {% assign fcs_height = 0 %}
+  {% assign fcs_width = 0 %}
+  {% for feature in page.features %}
+    {% if fcs_width < feature.image_width %}
+      {% assign fcs_width = feature.image_width %}
+    {% endif %}
+    {% if fcs_height < feature.image_height %}
+      {% assign fcs_height = feature.image_height %}
+    {% endif %}
+  {% endfor %}
+  {% assign fcs_results = fcs_parser | strip_newlines | strip | split: ", " %}
+  {% assign fcs_display = fcs_results | uniq | join: "," %}
+  {% assign fcs_image_only = false %}
+  {% if fcs_display == "1" %}{% assign fcs_image_only = true %}{% endif %}
+
+  {% comment %} Only display the features if they are all uniform in content {% endcomment %}
+  {% if fcs_display.size == 1 %}
+
+    {% if fcs_image_only %}
+      <img class="page-features__img-placeholder mw-100 mh-100 w-75 h-auto" width="{{ fcs_width }}" height="{{ fcs_height }}" src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTYgOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTYiIGhlaWdodD0iOSIgZmlsbD0idHJhbnNwYXJlbnQiLz48L3N2Zz4=" alt=""/>
+    {% endif %}
+
+    {% if site.has_background_image? %}<div class="page-features-container container">{% endif %}
+      
+
+    <div id="fcs" data-ride="carousel" data-interval="8000" class="page-features carousel slide{% if fcs_image_only %} page-features--img-only mt-n4 mt-lg-0{% else %} py-3 py-lg-5{% endif %}{% if site.has_background_image? %} mx-auto rounded-top bg-dark{% endif %}">
+      <div class="carousel-inner bg-dark{% if site.has_background_image? %} rounded-top{% endif %}">
+        {% if fcs_image_only %}
+        {% for feature in page.features %}
+
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+          {% comment %}<a href="{{ feature.page.url }}" class="d-block">{% endcomment %}
+          {% if page.slug == 'about' %}
+          <div class="page-features__img-overlay">
+            <div class="container text-light position-relative" style="height: inherit; z-index: 2;">
+              <div class="page-features__content" style="height: inherit;">
+                <div class="row align-items-center" style="height: inherit;">
+                  <div class="col-sm gx-5 h2 mb-4 mt-4 counter-widget">
+                    <span id="SPK-SUJGSQseenAll" dataid="SPK-SUJGSQ==" datapoint="seenAll" sitename="https://actioncounter.3dna.io/public/"></span>
+                    <script src="https://actioncounter.3dna.io/public/js/counter-widgets.js?SPK-SUJGSQseenAll"></script>
+                    <p></p>
+                    <span>Community Members Impacted</span>
+                    <p></p>
+                  </div>
+                  <div class="col-sm gx-5 h2 mb-4 mt-4 counter-widget">
+                    <span id="SPK-SUJGSQcompletedAll" dataid="SPK-SUJGSQ==" datapoint="completedAll" sitename="https://actioncounter.3dna.io/public/"></span>
+                    <script src="https://actioncounter.3dna.io/public/js/counter-widgets.js?SPK-SUJGSQcompletedAll"></script>
+                    <p></p>
+                    <span>Trees Planted</span>
+                    <p></p>
+                  </div>
+                  <div class="col-sm gx-5 h2 mb-4 mt-4 counter-widget">
+                    <span id="SPK-SUJGSQoptedin" dataid="SPK-SUJGSQ==" datapoint="optedin" sitename="https://actioncounter.3dna.io/public/"></span>
+                    <script src="https://actioncounter.3dna.io/public/js/counter-widgets.js?SPK-SUJGSQoptedin"></script>
+                    <p></p>
+                    <span>Volunteer Hours</span>
+                    <p></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <img src="{{ feature.image_url }}" class="page-features__img d-block of-cover h-100" alt="{{ feature.name }}" style="z-index: 1; width: 100%;"/>
+          </div>
+          {% else %}
+          <img class="mw-100 mh-100 w-75 h-auto" src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTYgOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTYiIGhlaWdodD0iOSIgZmlsbD0idHJhbnNwYXJlbnQiLz48L3N2Zz4=" alt=""/>
+          <img src="{{ feature.image_url }}" class="page-features__img d-block of-cover h-100" alt="{{ feature.name }}" style="width: 100%;"/>
+          {% endif %}
+          {% comment %}</a>{% endcomment %}
+        </div>
+
+        {% endfor %}
+        {% else %}
+          {% for feature in page.features %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+              <a href="{{ feature.page.url }}" class="d-block position-relative">
+                {% if feature.headline.size > 0 %}
+                  <div class="container text-light position-relative">
+                    <div class="page-features__content">
+                      <div class="row align-items-center flex-column-reverse flex-md-row">
+                        <div class="col-md-6 h1 mb-4">{{ feature.headline }}</div>
+                        <div class="col-md-6 mb-4 fcs-img-shadow">
+                          <div class="position-relative">
+                            <img class="mw-100 mh-100 h-auto" width="540" height="430" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAhwAAAGuCAQAAABxHRcUAAAD+ElEQVR42u3UIQEAAAzDsM+/6WsYGkkkFDQHUIoEgHEAxgEYB2AcgHEAGAdgHIBxAMYBGAeAcQDGARgHYByAcQAYB2AcgHEAxgEYB2AcAMYBGAdgHIBxAMYBYByAcQDGARgHYBwAxgEYB2AcgHEAxgFgHIBxAMYBGAdgHIBxABgHYByAcQDGARgHgHEAxgEYB2AcgHEAGAdgHIBxAMYBGAeAcQDGARgHYByAcQDGAWAcgHEAxgEYB2AcAMYBGAdgHIBxAMYBYByAcQDGARgHYBwAxgEYB2AcgHEAxgEYB4BxAMYBGAdgHIBxABgHYByAcQDGARgHgHEAxgEYB2AcgHEAxgFgHIBxAMYBGAdgHADGARgHYByAcQDGAWAcgHEAxgEYB2AcAMYBGAdgHIBxAMYBGAeAcQDGARgHYByAcQAYB2AcgHEAxgEYB4BxAMYBGAdgHIBxABgHYByAcQDGARgHYBwAxgEYB2AcgHEAxgFgHIBxAMYBGAdgHADGARgHYByAcQDGAWAcgHEAxgEYB2AcgHEAGAdgHIBxAMYBGAeAcQDGARgHYByAcQAYB2AcgHEAxgEYB2AcAMYBGAdgHIBxAMYBYByAcQDGARgHYBwAxgEYB2AcgHEAxgFgHIBxAMYBGAdgHIBxABgHYByAcQDGARgHgHEAxgEYB2AcgHEAGAdgHIBxAMYBGAeAcQDGARgHYByAcQDGAWAcgHEAxgEYB2AcAMYBGAdgHIBxAMYBYByAcQDGARgHYBwAxgEYB2AcgHEAxgEYB4BxAMYBGAdgHIBxABgHYByAcQDGARgHgHEAxgEYB2AcgHEAxiEBYByAcQDGARgHYBwAxgEYB2AcgHEAxgFgHIBxAMYBGAdgHADGARgHYByAcQDGARgHgHEAxgEYB2AcgHEAGAdgHIBxAMYBGAeAcQDGARgHYByAcQAYB2AcgHEAxgEYB2AcAMYBGAdgHIBxAMYBYByAcQDGARgHYBwAxgEYB2AcgHEAxgFgHIBxAMYBGAdgHIBxABgHYByAcQDGARgHgHEAxgEYB2AcgHEAGAdgHIBxAMYBGAeAcQDGARgHYByAcQDGAWAcgHEAxgEYB2AcAMYBGAdgHIBxAMYBYByAcQDGARgHYByAcQAYB2AcgHEAxgEYB4BxAMYBGAdgHIBxABgHYByAcQDGARgHgHEAxgEYB2AcgHEAxgFgHIBxAMYBGAdgHADGARgHYByAcQDGAWAcgHEAxgEYB2AcAMYBGAdgHIBxAMYBGAeAcQDGARgHYByAcQAYB2AcgHEAxgEYB4BxAMYBGAdgHIBxABgHYByAcQDGARgHYBwAxgEYB2AcgHEAxgFgHIBxADsP7iABr3S8NqYAAAAASUVORK5CYII=" alt=""/>
+                            <img src="{{ feature.image_url }}" class="page-features__content-img of-cover w-100 h-100 rounded" width="540" height="430" alt="{{ feature.name }}"/>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              </a>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      {% if page.features_count > 1 %}
+        <div class="container">
+          <div class="row">
+            <div class="{% unless fcs_image_only %}col-md-6 offset-md-6{% endunless %}">
+              <ol class="carousel-indicators{% unless fcs_image_only %} pt-3 pt-lg-5 position-relative my-0{% endunless %}">
+                {% for feature in page.features %}
+                  <li data-target="#fcs" data-slide-to="{{ forloop.index0 }}" {% if forloop.first %}class="active"{% endif %}><span></span></li>
+                {% endfor %}
+              </ol>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if site.has_background_image? %}</div>{% endif %}
+
+  {% endif %}
+
+{% endif %}
+{% if page.slug == 'about' %}
+<style>
+  .page-features__img-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .page-features__content {
+    min-height: inherit;
+    z-index: 2;
+  }
+  .counter-widget {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: saturate(150%) blur(10px);
+    border-radius: 25px;
+    height: 40%;
+    margin: 18px;
+        display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    align-items: center;
+  }
+</style>
+{% endif %}
